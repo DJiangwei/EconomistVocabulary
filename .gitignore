@@ -1,0 +1,32 @@
+# Large binary files (2.8GB)
+2020/
+2021/
+2022/
+2023/
+2024/
+2025/
+2026/
+*.pdf
+
+# Extracted text (regeneratable)
+txt/
+
+# Raw word lists (downloadable)
+word_lists/
+
+# Generated reports (regeneratable)
+reports/
+
+# Database (142MB, regeneratable)
+vocab.db
+vocab.db-wal
+vocab.db-shm
+
+# macOS
+.DS_Store
+*.pyc
+__pycache__/
+
+# Logs
+.update.log
+.update.err
