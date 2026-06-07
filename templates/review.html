@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Review — Economist Vocabulary</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+         background: #0d1117; color: #c9d1d9; margin: 0; padding: 12px; line-height: 1.5;
+         touch-action: manipulation; user-select: none; -webkit-user-select: none; }
+  .container { max-width: 480px; margin: 0 auto; }
+  .nav { display: flex; gap: 6px; margin: 6px 0 10px; font-size: 12px; }
+  .nav a { background: #161b22; padding: 5px 10px; border-radius: 6px; color: #8b949e;
+           text-decoration: none; border: 1px solid #21262d; }
+  .nav a.active { color: #58a6ff; border-color: #58a6ff; }
+  .filter-row { display: flex; gap: 6px; margin: 8px 0; }
+  .filter-row select { background: #161b22; color: #c9d1d9; border: 1px solid #30363d;
+    border-radius: 6px; padding: 6px 8px; font-size: 13px; }
+  .progress { display: flex; justify-content: space-between; align-items: center;
+              font-size: 12px; color: #8b949e; margin: 8px 0; }
+  .card { perspective: 1000px; margin: 16px 0; min-height: 300px; }
+  .card-inner { position: relative; width: 100%; min-height: 260px; transition: transform 0.4s;
+                transform-style: preserve-3d; cursor: pointer; }
+  .card-inner.flipped { transform: rotateY(180deg); }
+  .card-front, .card-back { position: absolute; width: 100%; min-height: 260px;
+    backface-visibility: hidden; -webkit-backface-visibility: hidden;
+    background: #161b22; border: 1px solid #21262d; border-radius: 12px; padding: 24px 20px; }
+  .card-back { transform: rotateY(180deg); }
+  .card-word { font-size: 28px; font-weight: 700; color: #58a6ff; margin-bottom: 4px; }
+  .card-phonetic { font-size: 14px; color: #8b949e; margin-bottom: 12px; }
+  .card-sentence { font-size: 16px; line-height: 1.6; color: #c9d1d9; font-style: italic; }
+  .card-sentence strong, .card-back strong { font-style: normal; color: #f0f6fc; }
+  .card-back .chinese { font-size: 20px; color: #ffa657; margin: 8px 0; }
+  .card-back .english { font-size: 14px; color: #c9d1d9; margin: 8px 0; }
+  .card-back .meta { font-size: 12px; color: #8b949e; margin-top: 10px; }
+  .badge { display: inline-block; padding: 1px 6px; border-radius: 10px; font-size: 10px; font-weight: 600; }
+  .badge-sat { background: #2196f3; color: #fff; } .badge-gre { background: #00bcd4; color: #000; }
+  .badge-c1 { background: #f44336; color: #fff; } .badge-c2 { background: #9c27b0; color: #fff; }
+  .badge-b1 { background: #4caf50; } .badge-b2 { background: #ff9800; color: #000; }
+  .actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin: 16px 0; }
+  .actions button { padding: 14px 0; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer;
+                    border: 2px solid #21262d; background: #161b22; color: #c9d1d9; transition: all 0.15s; }
+  .actions button:active { transform: scale(0.96); }
+  .btn-known { border-color: #3fb950 !important; color: #3fb950 !important; }
+  .btn-unsure { border-color: #d29922 !important; color: #d29922 !important; }
+  .btn-unknown { border-color: #f85149 !important; color: #f85149 !important; }
+  .nav-btns { display: flex; gap: 8px; justify-content: center; }
+  .nav-btns a { padding: 8px 16px; background: #161b22; border: 1px solid #21262d;
+                border-radius: 6px; color: #8b949e; text-decoration: none; font-size: 13px; }
+  .empty { text-align: center; padding: 60px 20px; color: #8b949e; }
+  .empty h2 { color: #58a6ff; font-size: 18px; }
+  .tap-hint { text-align: center; font-size: 11px; color: #3fb950; margin-top: 6px; }
+  @media (min-width: 768px) { .container { max-width: 520px; } }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="nav">
+  <a href="/">Dashboard</a>
+  <a href="/review" class="active">Review</a>
+  <a href="/browse">Browse</a>
+  <a href="/export">Export</a>
+</div>
+
+{% if word %}
+<div class="progress">
+  <span>📝 Word {{ idx + 1 }} of {{ total }}</span>
+  <span>Today: {{ stats.today }}</span>
+</div>
+
+<div class="filter-row">
+  <form id="filterForm" method="get" style="display:flex;gap:6px;width:100%;">
+    <select name="tier" onchange="this.form.submit()">
+      {% for t, label in [('all','All'),('sat','SAT'),('gre','GRE'),('c2','C2'),('c1','C1'),('b2','B2'),('core','Core')] %}
+      <option value="{{ t }}" {% if tier==t %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+    <select name="status" onchange="this.form.submit()">
+      {% for v, label in [('new,unsure','⬜🔄 Active'),('new','⬜ New Only'),('unsure','🔄 Unsure Only'),('new,unsure,unknown','All Unlearned')] %}
+      <option value="{{ v }}" {% if status==v %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+    <input type="hidden" name="idx" value="0" />
+  </form>
+</div>
+
+<div class="card" onclick="flip()">
+  <div class="card-inner" id="card">
+    <div class="card-front">
+      <div class="card-word">{{ word.word }}</div>
+      {% if word.phonetic %}<div class="card-phonetic">/{{ word.phonetic }}/</div>{% endif %}
+      {% if word.best_sample %}
+      <div class="card-sentence">{{ word.best_sample|safe }}</div>
+      {% else %}
+      <div class="card-sentence" style="color:#8b949e;">No sample sentence available.</div>
+      {% endif %}
+    </div>
+    <div class="card-back">
+      <div class="card-word">{{ word.word }}</div>
+      {% if word.phonetic %}<div class="card-phonetic">/{{ word.phonetic }}/</div>{% endif %}
+      {% if word.chinese %}<div class="chinese">{{ word.chinese }}</div>{% endif %}
+      {% if word.english_def %}<div class="english">{{ word.english_def[:200] }}</div>{% endif %}
+      <div class="meta">
+        {% if word.pos %}POS: {{ word.pos }} · {% endif %}
+        Count: {{ word.total_count }} · Issues: {{ word.issue_count }}
+      </div>
+      <div style="margin-top:6px;">
+        {% if word.cefr %}<span class="badge badge-{{ word.cefr|lower }}">{{ word.cefr }}</span>{% endif %}
+        {% if word.sat %}<span class="badge badge-sat">SAT</span>{% endif %}
+        {% if word.gre %}<span class="badge badge-gre">GRE</span>{% endif %}
+        {% if word.learn_status != 'new' %}<span class="badge" style="background:#30363d;">Status: {{ word.learn_status }}</span>{% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+<div class="tap-hint">👆 Tap card to flip</div>
+
+<div class="actions">
+  <button class="btn-known" onclick="mark('known')">✅ Known</button>
+  <button class="btn-unsure" onclick="mark('unsure')">🔄 Unsure</button>
+  <button class="btn-unknown" onclick="mark('unknown')">❌ Unknown</button>
+</div>
+
+<div class="nav-btns">
+  {% if idx > 0 %}
+  <a href="?tier={{tier}}&status={{status}}&idx={{idx-1}}">← Previous</a>
+  {% endif %}
+  <a href="?tier={{tier}}&status={{status}}&idx={{idx+1}}" id="nextLink">Skip →</a>
+</div>
+{% else %}
+<div class="empty">
+  <h2>🎉 All caught up!</h2>
+  <p>No more words to review with these filters.</p>
+  <a href="/review?status=new" class="nav active" style="display:inline-block;margin-top:8px;">Review New Words</a>
+</div>
+{% endif %}
+</div>
+<script>
+function flip() { document.getElementById('card').classList.toggle('flipped'); }
+{% if word %}
+async function mark(status) {
+  await fetch('/api/word/{{ word.id }}/status', {
+    method: 'POST', headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({status})
+  });
+  // Go to next word
+  window.location.href = '?tier={{tier}}&status={{status}}&idx={{ idx + 1 }}';
+}
+// Keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+  switch(e.key) {
+    case ' ': case 'Enter': e.preventDefault(); flip(); break;
+    case '1': mark('known'); break;
+    case '2': mark('unsure'); break;
+    case '3': mark('unknown'); break;
+    case 'ArrowLeft': if ({{ idx }} > 0) location.href = '?tier={{tier}}&status={{status}}&idx={{ idx - 1 }}'; break;
+    case 'ArrowRight': location.href = '?tier={{tier}}&status={{status}}&idx={{ idx + 1 }}'; break;
+  }
+});
+{% endif %}
+</script>
+</body>
+</html>
