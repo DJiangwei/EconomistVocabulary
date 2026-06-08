@@ -75,6 +75,12 @@ const LS = {
   set(k,v){ try{ localStorage.setItem('ev_'+k, JSON.stringify(v)) }catch(e){} }
 };
 let WORDS=[], user='', currentPage='dashboard', reviewIdx=0, reviewFilter={tier:'all',status:'new,unsure'};
+function speak(word, accent){
+  const u=new SpeechSynthesisUtterance(word);
+  u.lang=accent==='gb'?'en-GB':'en-US';
+  u.rate=0.85;
+  try { speechSynthesis.cancel(); speechSynthesis.speak(u); } catch(e){}
+}
 
 // ── User ─────────────────────────────────────────────────
 function getUsers(){ return LS.get('users',[]) }
@@ -182,7 +188,7 @@ function renderReview(){
   <div class="card" onclick="document.getElementById('cardEl').classList.toggle('flipped')">
     <div class="card-inner" id="cardEl">
       <div class="card-front">
-        <div class="card-word">${w.w}</div>
+        <div class="card-word">${w.w} <span style="font-size:14px;cursor:pointer" onclick="event.stopPropagation();speak('${w.w}','gb')" title="British">🇬🇧</span> <span style="font-size:14px;cursor:pointer" onclick="event.stopPropagation();speak('${w.w}','us')" title="American">🇺🇸</span></div>
         ${w.p?`<div class="card-phonetic">/${w.p}/</div>`:''}
         ${w.sample?`<div class="card-sentence">${w.sample}</div>`:'<div class="card-sentence" style="color:#8b949e">No sample</div>'}
       </div>
