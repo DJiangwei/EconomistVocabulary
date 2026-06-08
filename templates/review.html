@@ -97,7 +97,7 @@
 <div class="card" onclick="flip()">
   <div class="card-inner" id="card">
     <div class="card-front">
-      <div class="card-word">{{ word.word }}</div>
+      <div class="card-word">{{ word.word }} <span style="font-size:16px;cursor:pointer" onclick="event.stopPropagation();speak('{{ word.word }}','gb')" title="British">🇬🇧</span> <span style="font-size:16px;cursor:pointer" onclick="event.stopPropagation();speak('{{ word.word }}','us')" title="American">🇺🇸</span></div>
       {% if word.phonetic %}<div class="card-phonetic">/{{ word.phonetic }}/</div>{% endif %}
       {% if word.best_sample %}
       <div class="card-sentence">{{ word.best_sample|safe }}</div>
@@ -146,6 +146,12 @@
 {% endif %}
 </div>
 <script>
+function speak(word, accent) {
+  const u = new SpeechSynthesisUtterance(word);
+  u.lang = accent === 'gb' ? 'en-GB' : 'en-US';
+  u.rate = 0.85;
+  try { speechSynthesis.cancel(); speechSynthesis.speak(u); } catch(e) {}
+}
 function handleUserChange(sel) {
   if (sel.value === '__new__') {
     const name = prompt('Enter your name:');
