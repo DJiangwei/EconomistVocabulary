@@ -45,6 +45,15 @@
   <a href="/review">Review</a>
   <a href="/browse" class="active">Browse</a>
   <a href="/export">Export</a>
+  <form method="post" action="/set_user" style="display:inline-flex;gap:4px;align-items:center;margin-left:auto;">
+    <select name="user_name" onchange="handleUserChange(this)" style="background:#161b22;color:#c9d1d9;border:1px solid #30363d;border-radius:6px;padding:5px 8px;font-size:12px;">
+      <option value="">👥 All</option>
+      {% for u in users %}<option value="{{ u.user_name }}" {% if current_user==u.user_name %}selected{% endif %}>{{ u.user_name }}</option>{% endfor %}
+      <option value="__new__">➕ New</option>
+    </select>
+    {% if current_user %}<span style="color:#58a6ff;font-size:12px;">👤 {{ current_user }}</span>{% endif %}
+    <input type="hidden" name="redirect" value="{{ request.path }}?{{ request.query_string.decode() }}" />
+  </form>
 </div>
 <form class="filters" method="get">
   <select name="tier" onchange="this.form.submit()">
@@ -99,6 +108,13 @@
 </div>
 </div>
 <script>
+function handleUserChange(sel) {
+  if (sel.value === '__new__') {
+    const name = prompt('Enter your name:');
+    if (name && name.trim()) { const f=sel.closest('form'); const i=document.createElement('input'); i.type='hidden'; i.name='user_name'; i.value=name.trim(); f.appendChild(i); f.submit(); }
+    else { sel.value = '{{ current_user }}'; }
+  } else { sel.form.submit(); }
+}
 async function mark(wordId, status) {
   await fetch(`/api/word/${wordId}/status`, {
     method: 'POST', headers: {'Content-Type': 'application/json'},

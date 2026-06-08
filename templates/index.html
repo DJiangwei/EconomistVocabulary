@@ -52,6 +52,17 @@
   <a href="/review">📝 Review</a>
   <a href="/browse">🔍 Browse</a>
   <a href="/export">📥 Export</a>
+  <form method="post" action="/set_user" style="display:inline-flex;gap:4px;align-items:center;margin-left:auto;">
+    <select name="user_name" onchange="this.form.submit()" style="background:#161b22;color:#c9d1d9;border:1px solid #30363d;border-radius:6px;padding:5px 8px;font-size:12px;">
+      <option value="">👥 All Users</option>
+      {% for u in users %}
+      <option value="{{ u.user_name }}" {% if current_user == u.user_name %}selected{% endif %}>{{ u.user_name }}</option>
+      {% endfor %}
+      <option value="__new__">➕ New user...</option>
+    </select>
+    {% if current_user %}<span style="color:#58a6ff;font-size:12px;">👤 {{ current_user }}</span>{% endif %}
+    <input type="hidden" name="redirect" value="/" />
+  </form>
 </div>
 
 <div class="stats">
