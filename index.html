@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>Economist Vocabulary</title>
+<style>
+*,*::before,*::after{box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#c9d1d9;margin:0;padding:12px;line-height:1.5;touch-action:manipulation}
+.container{max-width:500px;margin:0 auto}
+h1{color:#58a6ff;font-size:18px;margin:0}
+a{color:#58a6ff;text-decoration:none}
+.nav{display:flex;gap:4px;margin:8px 0;flex-wrap:wrap;font-size:12px}
+.nav a,.nav button{background:#161b22;padding:5px 10px;border-radius:6px;color:#8b949e;border:1px solid #21262d;cursor:pointer;font-size:12px;font-family:inherit}
+.nav a.active,.nav button.active{color:#58a6ff;border-color:#58a6ff}
+.user-row{display:flex;gap:6px;align-items:center;margin:8px 0;font-size:12px}
+.user-row select,.user-row button{background:#161b22;color:#c9d1d9;border:1px solid #30363d;border-radius:6px;padding:5px 8px;font-size:12px}
+.user-row button{background:#238636;color:#fff;border:none;cursor:pointer}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:10px 0}
+.stat{background:#161b22;border:1px solid #21262d;border-radius:8px;padding:10px;text-align:center}
+.stat-val{font-size:22px;font-weight:700}.stat-lbl{font-size:10px;color:#8b949e}
+.known .stat-val{color:#3fb950}.unknown .stat-val{color:#f85149}.unsure .stat-val{color:#d29922}.new .stat-val{color:#8b949e}
+.progress-bar{background:#21262d;border-radius:4px;height:6px;margin:8px 0;overflow:hidden}
+.progress-fill{height:100%;background:#3fb950;border-radius:4px;transition:width .3s}
+.loading{text-align:center;padding:60px 20px;color:#8b949e}
+.loading .spinner{font-size:40px;animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+.card{perspective:1000px;margin:16px 0;min-height:280px}
+.card-inner{position:relative;width:100%;min-height:260px;transition:transform .4s;transform-style:preserve-3d;cursor:pointer}
+.card-inner.flipped{transform:rotateY(180deg)}
+.card-front,.card-back{position:absolute;width:100%;min-height:260px;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:#161b22;border:1px solid #21262d;border-radius:12px;padding:24px 20px}
+.card-back{transform:rotateY(180deg)}
+.card-word{font-size:26px;font-weight:700;color:#58a6ff;margin-bottom:4px}
+.card-phonetic{font-size:13px;color:#8b949e;margin-bottom:10px}
+.card-sentence{font-size:16px;line-height:1.6;font-style:italic}
+.card-sentence b,.card-back b{color:#f0f6fc;font-style:normal}
+.card-back .chinese{font-size:18px;color:#ffa657;margin:8px 0}
+.card-back .english{font-size:13px;color:#c9d1d9;margin:6px 0}
+.card-back .meta{font-size:11px;color:#8b949e;margin-top:8px}
+.badge{display:inline-block;padding:1px 6px;border-radius:10px;font-size:10px;font-weight:600;margin:0 1px}
+.badge-sat{background:#2196f3}.badge-gre{background:#00bcd4;color:#000}.badge-c1{background:#f44336}.badge-c2{background:#9c27b0}.badge-b1{background:#4caf50}.badge-b2{background:#ff9800;color:#000}
+.actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:16px 0}
+.actions button{padding:14px 0;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;border:2px solid #21262d;background:#161b22;color:#c9d1d9}
+.actions button:active{transform:scale(.96)}
+.btn-known{border-color:#3fb950!important;color:#3fb950!important}
+.btn-unsure{border-color:#d29922!important;color:#d29922!important}
+.btn-unknown{border-color:#f85149!important;color:#f85149!important}
+.nav-btns{display:flex;gap:8px;justify-content:center;margin:10px 0}
+.nav-btns a{padding:8px 16px;background:#161b22;border:1px solid #21262d;border-radius:6px;color:#8b949e;text-decoration:none;font-size:13px}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th,td{padding:5px 6px;border-bottom:1px solid #21262d;text-align:left}
+th{background:#161b22;color:#8b949e;position:sticky;top:0}
+.search{display:flex;gap:4px;margin:8px 0}
+.search input,.search select{flex:1;background:#161b22;color:#c9d1d9;border:1px solid #30363d;border-radius:6px;padding:6px 8px;font-size:12px}
+.btn{display:inline-block;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none}
+.btn-primary{background:#238636;color:#fff}
+.btn-info{background:#161b22;color:#c9d1d9;border:1px solid #30363d;font-size:12px;cursor:pointer}
+.status-btn{padding:2px 6px;border-radius:3px;font-size:10px;cursor:pointer;border:1px solid #30363d;background:#161b22;color:#8b949e}
+.status-known{background:#1a3a1a;color:#3fb950;border-color:#3fb950}
+.status-unknown{background:#3a1a1a;color:#f85149;border-color:#f85149}
+.status-unsure{background:#3a2a0a;color:#d29922;border-color:#d29922}
+footer{text-align:center;font-size:10px;color:#8b949e;margin-top:20px;padding-top:10px;border-top:1px solid #21262d}
+.tap-hint{text-align:center;font-size:11px;color:#3fb950;margin-top:4px}
+@media(min-width:768px){.container{max-width:520px}}
+</style>
+</head>
+<body>
+<div class="container" id="app">
+<div class="loading" id="loading"><div class="spinner">📖</div><p>Loading 50,077 words…</p></div>
+<div id="content" style="display:none"></div>
+</div>
+<script>
+// ── State ────────────────────────────────────────────────
+const LS = {
+  get(k, d){ try{ const v=localStorage.getItem('ev_'+k); return v?JSON.parse(v):d }catch(e){return d} },
+  set(k,v){ try{ localStorage.setItem('ev_'+k, JSON.stringify(v)) }catch(e){} }
+};
+let WORDS=[], user='', currentPage='dashboard', reviewIdx=0, reviewFilter={tier:'all',status:'new,unsure'};
+function speak(word, accent){
+  const u=new SpeechSynthesisUtterance(word);
+  u.lang=accent==='gb'?'en-GB':'en-US';
+  u.rate=0.85;
+  try { speechSynthesis.cancel(); speechSynthesis.speak(u); } catch(e){}
+}
+
+// ── User ─────────────────────────────────────────────────
+function getUsers(){ return LS.get('users',[]) }
+function setCurrentUser(name){ user=name; LS.set('currentUser',name); if(!getUsers().includes(name)){ LS.set('users',[...getUsers(),name]) } refresh() }
+function getUserStatus(wordId){ return LS.get('status_'+user+'_'+wordId, 'new') }
+function setUserStatus(wordId,status){ LS.set('status_'+user+'_'+wordId,status); LS.set('lastReview_'+user,new Date().toISOString().slice(0,10)) }
+function getStats(){
+  let known=0,unknown=0,unsure=0,newCount=0;
+  WORDS.forEach(w=>{ const s=getUserStatus(w.id); if(s==='known')known++;else if(s==='unknown')unknown++;else if(s==='unsure')unsure++;else newCount++ });
+  return {total:WORDS.length,known,unknown,unsure,new:newCount,today:known+unknown+unsure};
+}
+function todayCount(){ return LS.get('lastReview_'+user,'')===new Date().toISOString().slice(0,10)? getStats().today : 0 }
+
+// ── Filter words ─────────────────────────────────────────
+function filterWords(opts={}){
+  let tier=opts.tier||'all', status=opts.status||'', search=opts.search||'';
+  return WORDS.filter(w=>{
+    if(tier==='sat'&&!w.sat)return false; if(tier==='gre'&&!w.gre)return false;
+    if(tier==='c2'&&w.cefr!=='C2')return false; if(tier==='c1'&&w.cefr!=='C1')return false;
+    if(tier==='b2'&&w.cefr!=='B2')return false; if(tier==='b1'&&w.cefr!=='B1')return false;
+    if(tier==='core'&&(w.sat||w.gre||w.cefr))return false;
+    if(status){ const sts=status.split(','); const s=getUserStatus(w.id); if(!sts.includes(s))return false }
+    if(search){ const q=search.toLowerCase(); if(!w.w.includes(q)&&!w.c.includes(q))return false }
+    return true;
+  });
+}
+
+// ── Render ───────────────────────────────────────────────
+function badge(w){
+  let h=''; if(w.cefr)h+=`<span class="badge badge-${w.cefr.toLowerCase()}">${w.cefr}</span>`;
+  if(w.sat)h+='<span class="badge badge-sat">SAT</span>'; if(w.gre)h+='<span class="badge badge-gre">GRE</span>';
+  return h||'—';
+}
+function statusBtns(w){
+  const s=getUserStatus(w.id);
+  return `<button class="status-btn ${s==='known'?'status-known':''}" onclick="markWord(${w.id},'known')">✅</button>
+          <button class="status-btn ${s==='unsure'?'status-unsure':''}" onclick="markWord(${w.id},'unsure')">🔄</button>
+          <button class="status-btn ${s==='unknown'?'status-unknown':''}" onclick="markWord(${w.id},'unknown')">❌</button>`;
+}
+function markWord(wordId,status){ setUserStatus(wordId,status); refresh(); }
+function nav(page,active){ currentPage=page; reviewFilter={tier:'all',status:'new,unsure'}; reviewIdx=0; refresh(); }
+
+function renderDashboard(){
+  const s=getStats(), pct=s.total>0?(s.known/s.total*100):0;
+  const users=getUsers();
+  return `<h1>📖 Economist Vocabulary</h1>
+<div class="nav">
+  <a class="active" onclick="nav('dashboard')">Dashboard</a>
+  <a onclick="nav('review')">📝 Review</a>
+  <a onclick="nav('browse')">🔍 Browse</a>
+  <a onclick="exportCSV()">📥 Export</a>
+</div>
+<div class="user-row">
+  <select id="userSelect" onchange="switchUser(this.value)">
+    <option value="">👥 Select user…</option>
+    ${users.map(u=>`<option value="${u}" ${u===user?'selected':''}>${u}</option>`).join('')}
+  </select>
+  <button onclick="newUser()">➕ New</button>
+  ${user?`<span style="color:#58a6ff">👤 ${user}</span>`:''}
+</div>
+<div class="stats">
+  <div class="stat known"><div class="stat-val">${s.known}</div><div class="stat-lbl">✅ Known</div></div>
+  <div class="stat unknown"><div class="stat-val">${s.unknown}</div><div class="stat-lbl">❌ Unknown</div></div>
+  <div class="stat unsure"><div class="stat-val">${s.unsure}</div><div class="stat-lbl">🔄 Unsure</div></div>
+  <div class="stat new"><div class="stat-val">${s.new}</div><div class="stat-lbl">⬜ New</div></div>
+  <div class="stat" style="grid-column:span 2"><div class="stat-val">${s.total}</div><div class="stat-lbl">Total Words</div></div>
+</div>
+<div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+<p style="color:#8b949e;font-size:11px;text-align:center">${pct.toFixed(1)}% mastered · ${s.total-s.known} remaining</p>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:12px">
+  <button class="btn btn-primary" onclick="nav('review')">📝 Start Review</button>
+  <button class="btn btn-info" onclick="startReview('new')">⬜ New Words</button>
+  <button class="btn btn-info" onclick="startReview('sat')">🎯 SAT Words</button>
+  <button class="btn btn-info" onclick="startReview('gre')">📚 GRE Words</button>
+  <button class="btn btn-info" onclick="nav('browse')">🔍 Browse All</button>
+  <button class="btn btn-info" onclick="exportCSV()">📥 Export Unknown</button>
+</div>
+<footer>${s.total} words · 207 issues · Static</footer>`;
+}
+
+function startReview(tier){ currentPage='review'; reviewFilter={tier:tier,status:'new,unsure'}; reviewIdx=0; refresh(); }
+
+function renderReview(){
+  const words = filterWords({tier:reviewFilter.tier, status:reviewFilter.status});
+  if(words.length===0) return `<div class="nav"><a onclick="nav('dashboard')">← Dashboard</a><a class="active">Review</a></div><div class="loading"><h2>🎉 All caught up!</h2><p>No words to review with this filter.</p><button class="btn btn-primary" onclick="nav('dashboard')">Back</button></div>`;
+  const w=words[reviewIdx % words.length];
+  const s=getStats();
+  const tierOpts=[['all','All'],['sat','SAT'],['gre','GRE'],['c2','C2'],['c1','C1'],['b2','B2'],['core','Core']];
+  const statusOpts=[['new,unsure','⬜🔄 Active'],['new','⬜ New'],['unsure','🔄 Unsure'],['new,unsure,unknown','All Unlearned']];
+  return `<div class="nav">
+    <a onclick="nav('dashboard')">Dashboard</a>
+    <a class="active">Review</a>
+  </div>
+  <div style="font-size:12px;color:#8b949e;display:flex;justify-content:space-between;margin:8px 0">
+    <span>📝 ${reviewIdx+1} / ${words.length}</span><span>Today: ${s.today}</span>
+  </div>
+  <div style="display:flex;gap:4px;margin:8px 0">
+    <select onchange="reviewFilter.tier=this.value;reviewIdx=0;refresh()" style="background:#161b22;color:#c9d1d9;border:1px solid #30363d;border-radius:4px;padding:4px 6px;font-size:11px">
+      ${tierOpts.map(([v,l])=>`<option value="${v}" ${reviewFilter.tier===v?'selected':''}>${l}</option>`).join('')}
+    </select>
+    <select onchange="reviewFilter.status=this.value;reviewIdx=0;refresh()" style="background:#161b22;color:#c9d1d9;border:1px solid #30363d;border-radius:4px;padding:4px 6px;font-size:11px">
+      ${statusOpts.map(([v,l])=>`<option value="${v}" ${reviewFilter.status===v?'selected':''}>${l}</option>`).join('')}
+    </select>
+  </div>
+  <div class="card" onclick="document.getElementById('cardEl').classList.toggle('flipped')">
+    <div class="card-inner" id="cardEl">
+      <div class="card-front">
+        <div class="card-word">${w.w} <span style="font-size:14px;cursor:pointer" onclick="event.stopPropagation();speak('${w.w}','gb')" title="British">🇬🇧</span> <span style="font-size:14px;cursor:pointer" onclick="event.stopPropagation();speak('${w.w}','us')" title="American">🇺🇸</span></div>
+        ${w.p?`<div class="card-phonetic">/${w.p}/</div>`:''}
+        ${w.sample?`<div class="card-sentence">${w.sample}</div>`:'<div class="card-sentence" style="color:#8b949e">No sample</div>'}
+      </div>
+      <div class="card-back">
+        <div class="card-word">${w.w}</div>
+        ${w.p?`<div class="card-phonetic">/${w.p}/</div>`:''}
+        ${w.c?`<div class="chinese">${w.c}</div>`:''}
+        ${w.e?`<div class="english">${w.e}</div>`:''}
+        <div class="meta">${w.pos?`POS: ${w.pos} · `:''}Count: ${w.count} · Issues: ${w.issues}</div>
+        <div style="margin-top:4px">${badge(w)} ${getUserStatus(w.id)!=='new'?`<span class="badge" style="background:#30363d">Seen</span>`:''}</div>
+      </div>
+    </div>
+  </div>
+  <div class="tap-hint">👆 Tap card to flip</div>
+  <div class="actions">
+    <button class="btn-known" onclick="markAndNext(${w.id},'known')">✅ Known</button>
+    <button class="btn-unsure" onclick="markAndNext(${w.id},'unsure')">🔄 Unsure</button>
+    <button class="btn-unknown" onclick="markAndNext(${w.id},'unknown')">❌ Unknown</button>
+  </div>
+  <div class="nav-btns">
+    ${reviewIdx>0?`<a onclick="reviewIdx--;refresh()">← Prev</a>`:''}
+    <a onclick="reviewIdx++;refresh()">Skip →</a>
+  </div>`;
+}
+
+function markAndNext(wordId,status){ setUserStatus(wordId,status); reviewIdx++; refresh(); }
+
+function renderBrowse(){
+  const search=document.getElementById('browseSearch')?.value||'';
+  const tier=document.getElementById('browseTier')?.value||'all';
+  const sort=document.getElementById('browseSort')?.value||'count';
+  const status=document.getElementById('browseStatus')?.value||'';
+  let words = filterWords({tier,status,search});
+  if(sort==='issues') words.sort((a,b)=>b.issues-a.issues);
+  else if(sort==='word') words.sort((a,b)=>a.w.localeCompare(b.w));
+  else words.sort((a,b)=>b.count-a.count);
+  const page=parseInt(document.getElementById('browsePage')?.value||'1');
+  const total=words.length;
+  const pages=Math.ceil(total/25);
+  words=words.slice((page-1)*25,page*25);
+  const tierOpts=[['all','All'],['sat','SAT'],['gre','GRE'],['c2','C2'],['c1','C1'],['b2','B2'],['b1','B1'],['core','Core']];
+  const statusOpts=[['','All'],['new','New'],['known','Known'],['unknown','Unknown'],['unsure','Unsure']];
+  const sortOpts=[['count','Frequency'],['issues','Issues'],['word','Alpha']];
+  return `<div class="nav">
+    <a onclick="nav('dashboard')">Dashboard</a>
+    <a onclick="nav('review')">Review</a>
+    <a class="active">Browse</a>
+  </div>
+  <h1>🔍 Browse — ${total} words</h1>
+  <div class="search">
+    <select id="browseTier" onchange="refresh()">${tierOpts.map(([v,l])=>`<option value="${v}" ${tier===v?'selected':''}>${l}</option>`).join('')}</select>
+    <select id="browseStatus" onchange="refresh()">${statusOpts.map(([v,l])=>`<option value="${v}" ${status===v?'selected':''}>${l}</option>`).join('')}</select>
+    <select id="browseSort" onchange="refresh()">${sortOpts.map(([v,l])=>`<option value="${v}" ${sort===v?'selected':''}>${l}</option>`).join('')}</select>
+    <input id="browseSearch" placeholder="Search…" value="${search}" oninput="refresh()">
+    <input type="hidden" id="browsePage" value="${page}">
+  </div>
+  <table><thead><tr><th>Word</th><th>Level</th><th>Chinese</th><th>Count</th><th>Issues</th><th>Status</th></tr></thead>
+  <tbody>${words.map(w=>`<tr>
+    <td><strong>${w.w}</strong></td><td>${badge(w)}</td><td>${w.c.slice(0,30)}</td>
+    <td style="color:#8b949e">${w.count}</td><td style="color:#8b949e">${w.issues}</td>
+    <td>${statusBtns(w)}</td></tr>`).join('')}</tbody></table>
+  <div style="display:flex;gap:8px;justify-content:center;margin:10px 0;font-size:12px">
+    ${page>1?`<a onclick="document.getElementById('browsePage').value=${page-1};refresh()">← Prev</a>`:''}
+    <span>Page ${page}/${pages}</span>
+    ${page<pages?`<a onclick="document.getElementById('browsePage').value=${page+1};refresh()">Next →</a>`:''}
+  </div>`;
+}
+
+function exportCSV(){
+  const status=document.getElementById('exportStatus')?.value||'unknown';
+  const tier=document.getElementById('exportTier')?.value||'all';
+  const words=filterWords({tier,status});
+  let csv='Front,Back,Tags\n';
+  words.slice(0,500).forEach(w=>{
+    let front=w.w; if(w.p) front+=`\n/${w.p}/`; front+='\n'; if(w.sample) front+=`\n_${w.sample}_`;
+    let back=`## ${w.w}\n\n`; if(w.c) back+=`**Chinese:** ${w.c}\n`; if(w.e) back+=`**English:** ${w.e}\n`;
+    if(w.pos) back+=`**POS:** ${w.pos}\n`; if(w.cefr) back+=`**CEFR:** ${w.cefr}\n`;
+    back+=`\n📊 Appears in ${w.issues} issue(s) · ${w.count} occurrences`;
+    let tags=[]; if(w.cefr) tags.push(`CEFR::${w.cefr}`); csv+=`"${front.replace(/"/g,'""')}","${back.replace(/"/g,'""')}","${tags.join(' ')}"\n`;
+  });
+  const blob=new Blob([csv],{type:'text/csv'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download=`economist_${status}_${tier}.csv`; a.click();
+}
+
+function renderExport(){
+  const tierOpts=[['all','All'],['sat','SAT'],['gre','GRE'],['c2','C2'],['c1','C1']];
+  const statusOpts=[['unknown','Unknown'],['unsure','Unsure'],['known','Known']];
+  return `<div class="nav"><a onclick="nav('dashboard')">Dashboard</a><a class="active">Export</a></div>
+  <h1>📥 Export to Anki</h1>
+  <div class="search">
+    <select id="exportTier">${tierOpts.map(([v,l])=>`<option value="${v}">${l}</option>`).join('')}</select>
+    <select id="exportStatus">${statusOpts.map(([v,l])=>`<option value="${v}">${l}</option>`).join('')}</select>
+    <button class="btn btn-primary" onclick="exportCSV()">Download CSV</button>
+  </div>
+  <p style="color:#8b949e;font-size:12px">Exports up to 500 cards in Anki-compatible format. Import via File → Import in Anki.</p>`;
+}
+
+function render(){ return currentPage==='dashboard'?renderDashboard():currentPage==='review'?renderReview():currentPage==='browse'?renderBrowse():currentPage==='export'?renderExport():''; }
+
+function refresh(){
+  document.getElementById('content').innerHTML=render();
+  // Reset card flip
+  const cardEl=document.getElementById('cardEl'); if(cardEl) cardEl.classList.remove('flipped');
+}
+
+function switchUser(name){ setCurrentUser(name); }
+function newUser(){ const name=prompt('Enter your name:'); if(name&&name.trim()){ setCurrentUser(name.trim()) } }
+
+// Keyboard shortcuts
+document.addEventListener('keydown',e=>{
+  if(currentPage!=='review') return;
+  switch(e.key){
+    case ' ':case 'Enter': e.preventDefault(); document.getElementById('cardEl')?.classList.toggle('flipped'); break;
+    case '1': { const w=getCurrentReviewWord(); if(w) markAndNext(w.id,'known'); break; }
+    case '2': { const w=getCurrentReviewWord(); if(w) markAndNext(w.id,'unsure'); break; }
+    case '3': { const w=getCurrentReviewWord(); if(w) markAndNext(w.id,'unknown'); break; }
+    case 'ArrowLeft': if(reviewIdx>0){ reviewIdx--; refresh(); } break;
+    case 'ArrowRight': reviewIdx++; refresh(); break;
+  }
+});
+function getCurrentReviewWord(){
+  const words=filterWords({tier:reviewFilter.tier,status:reviewFilter.status});
+  return words.length>0?words[reviewIdx % words.length]:null;
+}
+
+// ── Init ─────────────────────────────────────────────────
+(async function init(){
+  try {
+    // Load compressed word data
+    const resp=await fetch('data/words.json.gz');
+    const ds=new DecompressionStream('gzip');
+    const decompressed=await new Response(resp.body.pipeThrough(ds)).text();
+    WORDS=JSON.parse(decompressed);
+    console.log(`Loaded ${WORDS.length} words`);
+  } catch(e){
+    document.getElementById('loading').innerHTML=`<p style="color:#f85149">Failed to load word data: ${e.message}</p><p>Make sure data/words.json.gz is deployed.</p>`;
+    return;
+  }
+  // Restore user
+  user=LS.get('currentUser','');
+  document.getElementById('loading').style.display='none';
+  document.getElementById('content').style.display='block';
+  refresh();
+})();
+</script>
+</body>
+</html>
