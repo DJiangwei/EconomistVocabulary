@@ -31,3 +31,5 @@ __pycache__/
 .update.log
 .update.err
 static/data/
+.server.log
+.server.err
